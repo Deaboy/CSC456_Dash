@@ -1,4 +1,4 @@
-/* CSC456 Prog 1 - "dash"
+/* CSC456 Prog 1 - "Dash"
  * Author:
  *   Daniel Andrus
  * 
@@ -23,18 +23,27 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-int onCommand(string command);
+void commandPreprocess(string& command, vector<string>& args);
+int onCommand(const vector<string>& args);
+int onCommandExit(const vector<string>& args);
+int onCommandCmdnm(const vector<string>& args);
+int onCommandPid(const vector<string>& args);
+int onCommandSystat(const vector<string>& args);
+int onCommandHelp(const vector<string>& args);
 
 int main()
 {
-  cout << "Welcome to dash. Written by Daniel Andrus\n"
+  cout << "Welcome to Dash, written by Daniel Andrus\n"
           "Type \"help\" for command help." << endl;
   
-  string input;
   int status;
+  string input;
+  string command;
+  vector<string> args;
   bool exit = false;
   
   // Enter main program loop
@@ -46,16 +55,25 @@ int main()
     // Input user command
     getline(cin, input);
     
+    // Preprocess command and arguments
+    command = input;
+    commandPreprocess(command, args); 
+    
     // Send command to parsing function
-    status = onCommand(input);
+    status = onCommand(args);
     
     switch (status)
     {
-    case 1:
+    case -1:        // exit program
       exit = true;
       break;
       
-    default:
+    case 1:         // error
+      cout << "\nAn error occured while executing command\n"
+              "  " << input << endl;
+      break;
+      
+    default:        // continue as normal
       break;
     }
   }
@@ -65,20 +83,92 @@ int main()
   return 0;
 }
 
-int onCommand(string command)
+int onCommand(const vector<string>& args)
 {
-  if (command == "exit")
+  // Distribute control to appropriate function
+  if (args.size() == 0)
   {
-    return 1;
+    // Do nothing
   }
-  else if (command == "")
+  else if (args[0] == "exit")
   {
-    return 0;
+    return onCommandExit(args);
+  }
+  else if (args[0] == "help")
+  {
+    return onCommandHelp(args);
+  }
+  else if (args[0] == "cmdnm")
+  {
+    return onCommandCmdnm(args);
+  }
+  else if (args[0] == "pid")
+  {
+    return onCommandPid(args);
+  }
+  else if (args[0] == "systat")
+  {
+    return onCommandSystat(args);
   }
   else
   {
-    cout << "Unknown command \"" << command << "\"" << endl;
-    return 0;
+    cout << "Unknown command \"" << args[0] << "\"" << endl;
   }
+  
+  // Return 0 to continue as normal
+  return 0;
 }
+
+void commandPreprocess(string& command, vector<string>& args)
+{
+  args.clear();
+  string tmp = "";
+  
+  // Split command into subcommands
+  for (int i = 0; i <= command.size(); i++)
+  {
+    if (command[i] == ' ' || command[i] == '\t' 
+        || command == "\n" || i == command.size())
+    {
+      if (!tmp.empty())
+      {
+        args.push_back(tmp);
+        tmp = "";
+      }
+    }
+    else
+    {
+      tmp += command[i];
+    }
+  }
+  
+  return;
+}
+
+int onCommandExit(const vector<string>& args)
+{
+  return -1;
+}
+
+int onCommandHelp(const vector<string>& args)
+{
+  return 0;
+}
+
+int onCommandCmdnm(const vector<string>& args)
+{
+  return 0;
+}
+
+int onCommandPid(const vector<string>& args)
+{
+  return 0;
+}
+
+int onCommandSystat(const vector<string>& args)
+{
+  return 0;
+}
+
+
 
