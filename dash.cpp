@@ -22,6 +22,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -152,11 +153,65 @@ int onCommandExit(const vector<string>& args)
 
 int onCommandHelp(const vector<string>& args)
 {
+  cout << "Available commands:\n"
+          "\n"
+          "cmdnm <pid>\n"
+          "Get the command string that started the process for a given "
+          "process ID,\nwhere <pid> is the process ID.\n"
+          "\n"
+          "pid <command>\n"
+          "Get the process IDs for a given command string. Returns PIDs of "
+          "all partially\nmatching processes.\n"
+          "\n"
+          "systat\n"
+          "Get system information, such as version number, uptime, memory "
+          "usage, and cpu\ninformation.\n"
+          "\n"
+          "exit\n"
+          "Exit Dash.\n" << endl;
+  
   return 0;
 }
 
 int onCommandCmdnm(const vector<string>& args)
 {
+  // Declare variables
+  ifstream fin;
+  string cmdnm;
+  string path;
+  
+  // Verify number of arguments
+  if (args.size() != 2)
+  {
+    cout << "Usage:\n"
+            "  cmdnm <pid>" << endl;
+    return 0;
+  }
+  
+  // Construct path
+  path = "/proc/";
+  path += args[1];
+  path += "/cmdline";
+  
+  // Assume pid is an int. If it's not, it'll throw an error anyway
+  fin.open(path.c_str());
+  if (!fin)
+  {
+    cout << "ERROR: One of two things:\n"
+            "- No permission to access process files\n"
+            "- No process with PID \"" << args[1] << "\"" << endl;
+    return 0;
+  }
+  
+  getline(fin, cmdnm);
+  
+  if (cmdnm != "")
+    cout << "Command: " << cmdnm << endl;
+  else
+    cout << "No command found for process " << args[1] << endl;
+  
+  fin.close();
+  
   return 0;
 }
 
