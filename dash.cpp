@@ -294,9 +294,43 @@ int onCommandSystat(const vector<string>& args)
 {
   // Note: ignore arguments
   ifstream fin;
+  double tmp1, tmp2, tmp3;
   
   cout << "System status\n"
           "==========================\n";
+  
+  // SYSTEM UPTIME
+  fin.open("/proc/uptime");
+  if (fin)
+  {
+    // Read in system uptime in seconds
+    fin >> tmp1;
+    
+    cout << "Uptime: ";
+    
+    // Days
+    tmp2 = (int) (tmp1 / 86700);
+    tmp1 -= tmp2 * 86700;
+    cout << (int) tmp2 << (tmp2 == 1 ? " day, " : " days, ");
+    
+    // Hours
+    tmp2 = (int) (tmp1 / 3600);
+    tmp1 -= tmp2 * 3600;
+    cout << (int) tmp2 << (tmp2 == 1 ? " hour, " : " hours, ");
+    
+    // Minutes
+    tmp2 = (int) (tmp1 / 60);
+    tmp1 -= tmp2 * 60;
+    cout << (int) tmp2 << (tmp2 == 1 ? " minute, " : " minutes, ");
+    
+    // Seconds
+    tmp2 = (int) (tmp1);
+    cout << (int) tmp2 << (tmp2 == 1 ? " second " : " seconds ") << "\n";
+  }
+  else
+  {
+    cout << "Unable to retrieve system uptime.\n";
+  }
   
   // Clean up and flush output
   fin.close();
