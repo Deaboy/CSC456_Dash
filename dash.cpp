@@ -294,7 +294,8 @@ int onCommandSystat(const vector<string>& args)
 {
   // Note: ignore arguments
   ifstream fin;
-  double tmp1, tmp2, tmp3;
+  double tmp1, tmp2, tmp3;    // Temporary variables
+  string str1, str2, str3;    // Temporary variables
   
   cout << "System status\n"
           "==========================\n";
@@ -303,7 +304,7 @@ int onCommandSystat(const vector<string>& args)
   fin.open("/proc/uptime");
   if (fin)
   {
-    // Read in system uptime in seconds
+    // Read in system uptime in seconds (with fractions of a second possible)
     fin >> tmp1;
     
     cout << "Uptime: ";
@@ -326,11 +327,34 @@ int onCommandSystat(const vector<string>& args)
     // Seconds
     tmp2 = (int) (tmp1);
     cout << (int) tmp2 << (tmp2 == 1 ? " second " : " seconds ") << "\n";
+    
+    fin.close();
   }
   else
   {
     cout << "Unable to retrieve system uptime.\n";
   }
+  
+  
+  // OS AND KERNEL VERSION
+  fin.open("/proc/version");
+  if (fin)
+  {
+    cout << "OS/Kernel version info:\n";
+    
+    // Read in every line and print to console
+    while (getline(fin, str1))
+    {
+      cout << "  " << str1 << "\n";
+    }
+    
+    fin.close();
+  }
+  else
+  {
+    cout << "Unable to retrieve os and kernel version.\n";
+  }
+  
   
   // Clean up and flush output
   fin.close();
