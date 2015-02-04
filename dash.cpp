@@ -127,7 +127,7 @@ void commandPreprocess(string& command, vector<string>& args)
   for (int i = 0; i <= command.size(); i++)
   {
     if (command[i] == ' ' || command[i] == '\t' 
-        || command == '\n' || i == command.size())
+        || command[i] == '\n' || i == command.size())
     {
       if (!tmp.empty())
       {
@@ -191,7 +191,7 @@ int onCommandCmdnm(const vector<string>& args)
   // Construct path
   path = "/proc/";
   path += args[1];
-  path += "/cmdline";
+  path += "/comm";
   
   // Assume pid is an int. If it's not, it'll throw an error anyway
   fin.open(path.c_str());
