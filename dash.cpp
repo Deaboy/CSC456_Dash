@@ -307,7 +307,7 @@ int onCommandSystat(const vector<string>& args)
     // Read in system uptime in seconds (with fractions of a second possible)
     fin >> tmp1;
     
-    cout << "Uptime: ";
+    cout << "Uptime:\n  ";
     
     // Days
     tmp2 = (int) (tmp1 / 86700);
@@ -356,8 +356,61 @@ int onCommandSystat(const vector<string>& args)
   }
   
   
+  // Memory info
+  fin.open("/proc/meminfo");
+  if (fin)
+  {
+    cout << "Memory info:\n";
+    
+    // Echo first 3 lines (MemTotal, MemFree, MemAvailable)
+    for (int i = 0; i < 3; i++)
+    {
+      getline(fin, str1);
+      cout << "  " << str1 << '\n';
+    }
+    
+    fin.close();
+  }
+  else
+  {
+    cout << "Unable to retrieve memory info.\n";
+  }
+  
+  
+  // Processor info
+  fin.open("/proc/cpuinfo");
+  if (fin)
+  {
+    cout << "CPU Info:\n";
+    
+    // Read in files
+    for (int i = 0; getline(fin, str1) && str1 != ""; i++)
+    {
+      // Only print out specific lines
+      switch(i)
+      {
+      case 1:
+      case 4:
+      case 7:
+      case 8:
+        cout << "  " << str1 << "\n";
+      
+      default:
+        break;
+      }
+    }
+    
+    fin.close();  
+  }
+  else
+  {
+    cout << "Unable to retrieve cpu info.\n";
+  }
+  
+  
   // Clean up and flush output
-  fin.close();
+  if (fin)
+    fin.close();
   cout.flush();
   
   return 0;
