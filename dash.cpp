@@ -34,6 +34,15 @@ int onCommandPid(const vector<string>& args);
 int onCommandSystat(const vector<string>& args);
 int onCommandHelp(const vector<string>& args);
 
+
+/**
+ * Main
+ * Author: Daniel Andrus
+ *
+ * Entry point for the program. Contains the main program loop.
+ *
+ * Returns - 0
+**/
 int main()
 {
   cout << "Welcome to Dash, written by Daniel Andrus\n"
@@ -82,6 +91,18 @@ int main()
   return 0;
 }
 
+
+/**
+ * onCommand
+ * Author: Daniel Andrus
+ *
+ * Takes a command and acts as a command switchboard, forwarding the arguments
+ * to their appropriate handling functions.
+ *
+ * args - vector of strings representing command arguments.
+ *
+ * Returns - success code, 0 if successful, -1 to exit the program.
+**/
 int onCommand(const vector<string>& args)
 {
   // Distribute control to appropriate function
@@ -118,7 +139,18 @@ int onCommand(const vector<string>& args)
   return 0;
 }
 
-void commandPreprocess(string& command, vector<string>& args)
+
+/**
+ * commandPreprocess
+ * Author: Daniel Andrus
+ *
+ * Preprocesses commands, splitting the raw strings by spaces and putting them
+ * into a vector.
+ *
+ * command - the raw command string read in from console
+ * args - vector of strings that will contain the output of this function
+**/
+void commandPreprocess(const string& command, vector<string>& args)
 {
   args.clear();
   string tmp = "";
@@ -144,11 +176,33 @@ void commandPreprocess(string& command, vector<string>& args)
   return;
 }
 
+
+/**
+ * onCommandExit
+ * Author: Daniel Andrus
+ *
+ * Handles the "exit" command. Returns the program's exit code.
+ *
+ * args - string vector of command arguments
+ *
+ * Returns - -1, the program's exit code.
+**/
 int onCommandExit(const vector<string>& args)
 {
   return -1;
 }
 
+
+/**
+ * onCommandHelp
+ * Author: Daniel Andrus
+ *
+ * Handles the "help" command. Displays help information to the user.
+ *
+ * args - string vector of command arguments
+ *
+ * Returns - 0
+**/
 int onCommandHelp(const vector<string>& args)
 {
   cout << "Available commands:\n"
@@ -171,6 +225,18 @@ int onCommandHelp(const vector<string>& args)
   return 0;
 }
 
+
+/**
+ * onCommandCmdnm
+ * Author: Daniel Andrus
+ *
+ * Handles the "cmdnm" command. Fetches the command name for thep rocess that
+ * matches the given process ID if one exists.
+ *
+ * args - string vector of command arguments
+ *
+ * Returns - 0
+**/
 int onCommandCmdnm(const vector<string>& args)
 {
   // Declare variables
@@ -226,6 +292,19 @@ int onCommandCmdnm(const vector<string>& args)
   return 0;
 }
 
+
+/**
+ * onCommandPid
+ * Author: Daniel Andrus
+ *
+ * Handles the "pid" command. Searches through the /proc directory to find a
+ * process whose command matches the search string given by the user and
+ * displays any matching process' PIDs.
+ *
+ * args - string vector of command arguments
+ *
+ * Returns - 0
+**/
 int onCommandPid(const vector<string>& args)
 {
   // Declare variables
@@ -290,6 +369,18 @@ int onCommandPid(const vector<string>& args)
   return 0;
 }
 
+
+/**
+ * onCommandSystat
+ * Author: Daniel Andrus
+ *
+ * Handles the "systat" command. Displays system information, such as OS version
+ * info, system uptime, memory usage, and cpu information.
+ *
+ * args - string vector of command arguments
+ *
+ * Returns - 0
+**/
 int onCommandSystat(const vector<string>& args)
 {
   // Note: ignore arguments
