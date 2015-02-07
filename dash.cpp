@@ -49,7 +49,7 @@ int main()
   while (!exit)
   {
     // Output prompt
-    cout << "dash>";
+    cout << "dash> ";
     
     // Input user command
     getline(cin, input);
