@@ -3,12 +3,8 @@
  *   Daniel Andrus
  * 
  * Description:
- * Command interface for viewing and managing system processes
- *
- * TODO
- * - Command: systat
- * - Handle errors
- * - Seperate commands into individual files
+ * Command interface for viewing and managing system processes. Includes a
+ * special easter egg!
  * 
  * Links
  * - http://cc.byexamples.com/2008/06/16/gnu-readline-implement-custom-auto-complete/
@@ -19,6 +15,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <unistd.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -26,13 +23,14 @@
 
 using namespace std;
 
-void commandPreprocess(string& command, vector<string>& args);
+void commandPreprocess(const string& command, vector<string>& args);
 int onCommand(const vector<string>& args);
 int onCommandExit(const vector<string>& args);
 int onCommandCmdnm(const vector<string>& args);
 int onCommandPid(const vector<string>& args);
 int onCommandSystat(const vector<string>& args);
 int onCommandHelp(const vector<string>& args);
+int onDragonborn(const vector<string>& args);
 
 
 /**
@@ -130,6 +128,13 @@ int onCommand(const vector<string>& args)
   {
     return onCommandSystat(args);
   }
+  else if (args.size() > 2
+          && args[0] == "FUS"
+          && args[1] == "RO"
+          && args[2] == "DAH")
+  {
+    return onDragonborn(args);
+  }
   else
   {
     cout << "Unknown command \"" << args[0] << "\"" << endl;
@@ -208,19 +213,22 @@ int onCommandHelp(const vector<string>& args)
   cout << "Available commands:\n"
           "\n"
           "cmdnm <pid>\n"
-          "Get the command string that started the process for a given "
-          "process ID,\nwhere <pid> is the process ID.\n"
+          "  Get the command string that started the process for a given "
+          "  process ID,\nwhere <pid> is the process ID.\n"
           "\n"
           "pid <command>\n"
-          "Get the process IDs for a given command string. Returns PIDs of "
-          "all partially\nmatching processes.\n"
+          "  Get the process IDs for a given command string. Returns PIDs of "
+          "  all partially\nmatching processes.\n"
           "\n"
           "systat\n"
-          "Get system information, such as version number, uptime, memory "
-          "usage, and cpu\ninformation.\n"
+          "  Get system information, such as version number, uptime, memory "
+          "  usage, and cpu\ninformation.\n"
           "\n"
           "exit\n"
-          "Exit Dash.\n" << endl;
+          "  Exit Dash.\n"
+          "\n"
+          "FUS RO DAH\n"
+          "  A seranade for the hero of Tamriel."<< endl;
   
   return 0;
 }
@@ -505,6 +513,60 @@ int onCommandSystat(const vector<string>& args)
   cout.flush();
   
   return 0;
+}
+
+
+/**
+ * onDragonborn
+ * Author: Daniel Andrus
+ *
+ * Prints out the lyrics to "Dragonborn", the theme song of Skyrim to the
+ * console in the dragon language! FUS RO DAH!
+ *
+ * args - string vector of command arguments
+ *
+ * Returns - 0
+**/
+int onDragonborn(const vector<string>& args)
+{
+  ifstream fin;
+  string input;
+  
+  int char_delay = 25 * 1000;
+  int line_delay = 250 * 1000;
+  
+  fin.open(".dragonborn.txt");
+  if (!fin)
+  {
+    cout << "Sorry, unable to open 'dragonborn.txt'!\n";
+    return 0;
+  }
+  
+  cout << '\n';
+  
+  while (getline(fin, input))
+  {
+    if (input == "")
+    {
+      cout << endl;
+      continue;
+    }
+    
+    cout << "  ";
+    
+    for (int i = 0; i < input.size(); i++)
+    {
+      cout << input[i];
+      cout.flush();
+      usleep(char_delay);
+    }
+    cout << endl;
+    usleep(line_delay);
+  }
+  
+  fin.close();
+  
+  cout << "\nFUS RO DAH!\n" << endl;
 }
 
 
