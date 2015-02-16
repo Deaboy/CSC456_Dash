@@ -9,7 +9,10 @@ int onCommandUnknown(const vector<string>& args)
   // Convert string vector to c string array
   argsa = new char* [args.size()];
   for (int i = 0; i < args.size(); i++)
-    argsa[i] = args[i].c_str();
+  {
+    argsa[i] = new char [args[i].length()+1];
+    strcpy(artsa[i], args[i].c_str());
+  }
   
   // Fork process
   childpid = fork();
@@ -33,7 +36,7 @@ int onCommandUnknown(const vector<string>& args)
   else
   {
     // Wait for completion
-    while (wait(&status) != pid);
+    while (wait(&status) != childpid);
   }
   
   // Return success
