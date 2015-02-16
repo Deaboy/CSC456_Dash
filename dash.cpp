@@ -15,11 +15,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <unistd.h>
-
-#include <sys/types.h>
-#include <dirent.h>
-#include <errno.h>
 
 using namespace std;
 
@@ -29,6 +24,7 @@ int onCommandExit(const vector<string>& args);
 int onCommandHelp(const vector<string>& args);
 
 #include "commands.h"
+#include "commands2.h"
 
 /**
  * Main
@@ -71,13 +67,13 @@ int main()
       exit = true;
       break;
       
-    case 1:         // error
+    default:        // error
       cout << "\nAn error occured while executing command\n"
               "  " << input << endl;
       break;
       
-    default:        // continue as normal
-      break;
+    case 0:
+      break;        // continue as normal
     }
   }
   
@@ -134,7 +130,7 @@ int onCommand(const vector<string>& args)
   }
   else
   {
-    cout << "Unknown command \"" << args[0] << "\"" << endl;
+    return onCommandUnknown(args);
   }
   
   // Return 0 to continue as normal
