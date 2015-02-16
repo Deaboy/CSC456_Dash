@@ -7,6 +7,6 @@ EXECS = dash
 
 all : $(EXECS)
 
-dash: dash.o
+dash: dash.o commands.o commands2.o
 	$(CPP) $(FLAGS) -o $@ $? $(LIBS)
 
