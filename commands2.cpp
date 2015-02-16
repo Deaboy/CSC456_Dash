@@ -11,7 +11,7 @@ int onCommandUnknown(const vector<string>& args)
   for (int i = 0; i < args.size(); i++)
   {
     argsa[i] = new char [args[i].length()+1];
-    strcpy(artsa[i], args[i].c_str());
+    strcpy(argsa[i], args[i].c_str());
   }
   
   // Fork process
