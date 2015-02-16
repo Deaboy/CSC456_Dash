@@ -221,7 +221,7 @@ int onCommandSystat(const vector<string>& args)
   }
   
   
-  // Memory info
+  // MEMORY INFO
   fin.open("/proc/meminfo");
   if (fin)
   {
@@ -242,7 +242,7 @@ int onCommandSystat(const vector<string>& args)
   }
   
   
-  // Processor info
+  // PROCESSOR INFO
   fin.open("/proc/cpuinfo");
   if (fin)
   {
@@ -298,39 +298,55 @@ int onDragonborn(const vector<string>& args)
   ifstream fin;
   string input;
   
+  // Output delays for awesome effect
   int char_delay = 25 * 1000;
   int line_delay = 250 * 1000;
   
-  fin.open(".dragonborn.txt");
+  // File to open
+  char filename[16] = ".dragonborn.txt";
+  
+  // Open file, handle errors
+  fin.open(filename);
   if (!fin)
   {
-    cout << "Sorry, unable to open 'dragonborn.txt'!\n";
+    cout << "Sorry, unable to open \"" << filename << "\"!\n";
     return 0;
   }
   
+  // Spacer
   cout << '\n';
   
+  // Begin printing contents of file
   while (getline(fin, input))
   {
+    // If we have a blank line, print new line without delay
     if (input == "")
     {
       cout << endl;
       continue;
     }
     
+    // 2-space padding on left. Makes the text stand out. Literally.
     cout << "  ";
     
+    // Print each character individually with a delay
     for (int i = 0; i < input.size(); i++)
     {
       cout << input[i];
-      cout.flush();
+      cout.flush();           // Gotta flush, or else nothing happens!
       usleep(char_delay);
     }
+    
+    // Print new line at end of line, add extra delay
     cout << endl;
     usleep(line_delay);
   }
   
+  // Clean up
   fin.close();
   
+  // Final shout of unrelenting force!
   cout << "\nFUS RO DAH!\n" << endl;
+  
+  return 0;
 }
