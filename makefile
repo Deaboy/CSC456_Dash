@@ -10,3 +10,6 @@ all : $(EXECS)
 dash: dash.o commands.o commands2.o
 	$(CPP) $(FLAGS) -o $@ $? $(LIBS)
 
+clean:
+	rm -rf $(EXECS) *.o
+

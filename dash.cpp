@@ -18,6 +18,7 @@
 
 using namespace std;
 
+int getCommand(ostream& out, istream& in, vector<string>& args);
 int onCommand(const vector<string>& args);
 int onCommandExit(const vector<string>& args);
 int onCommandHelp(const vector<string>& args);
@@ -182,7 +183,7 @@ int getCommand(ostream& out, istream& in, vector<string>& args)
   if (temp != "")
     args.push_back(temp);
   
-  return;
+  return 0;
 }
 
 
