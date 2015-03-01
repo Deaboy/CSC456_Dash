@@ -29,7 +29,7 @@ int onCommandUnknown(const vector<string>& args)
     if (execvp(*argsa, argsa) < 0)
     {
       // Handle exec errors
-      cout << "ERROR: failed to exec\n";
+      cout << "-dash: " << args[0] << ": command not found" << endl;
       return -2;                        // Return -2 to terminate program
     }
   }
@@ -57,5 +57,62 @@ int onCommandUnknown(const vector<string>& args)
 
 int onCommandCd(const vector<string>& args)
 {
+  string path;
+  
+  // Get the path if defined, otherwise return to home directory
+  if (args.size() >= 2)
+  {
+    path = args[1];
+  }
+  else
+  {
+    path = "~";
+  }
+  
+  // Attempt to change directory
+  if (chdir(path) == -1)
+  {
+    cout << "-dash: " << args[0] << ": " << path << ": ";
+    
+    // Error occured, display appropriate error message
+    switch(errno)
+    {
+    case EACCES:
+      cout << "Access denied";
+      break;
+      
+    case EFAULT:
+      cout << "Location out of bounds";
+      break;
+      
+    case EIO:
+      cout << "An I/O error occured";
+      break;
+      
+    case ELOOP:
+      cout << "Too many symbolic links";
+      break;
+      
+    case ENAMETOOLONG:
+      cout << "Path too long";
+      break;
+      
+    case ENOENT:
+    case ENOTDIR:
+      cout << "No such file or directory";
+      break;
+      
+    case ENOMEM:
+      cout << "Insufficient kernel memory available";
+      break;
+      
+    default:
+      cout << "An error occured";
+      break;
+    }
+    
+    return -1;                          // Return -1 for error
+  }
+  
   return 0;
 }
