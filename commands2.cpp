@@ -118,7 +118,61 @@ int onCommandCd(const vector<string>& args)
       break;
     }
     
+    cout << endl;
+    
     return 1;                          // Return 1 for error
+  }
+  
+  return 0;
+}
+
+int onCommandSignal(const vector<string>& args)
+{
+  // Verify number of arguments
+  if (args.size() < 3)
+  {
+    cout << "Usage:\n  " << args[0] << " <signal_num> <pid>" << endl;
+    return 0;
+  }
+  
+  int signal;
+  int pid;
+  
+  // Get numbers from arguments
+  signal = stoi(args[1]);
+  pid = stoi(args[2]);
+  
+  if (kill(pid, signal) == 0)
+  {
+    cout << "Signal " << signal << " sent to process " << pid << endl;
+  }
+  else
+  {
+    cout << "-dash: " << args[0] << ": ";
+    
+    // Error occured, display appropriate error message
+    switch(errno)
+    {
+    case EINVAL:
+      cout << signal << ": Invalid signal";
+      break;
+      
+    case EPERM:
+      cout << pid << ": Access to process denied";
+      break;
+      
+    case ESRCH:
+      cout << pid << ": Process or process group inaccessable";
+      break;
+      
+    default:
+      cout << "An error occured";
+      break;
+    }
+    
+    cout << endl;
+    
+    return 1;
   }
   
   return 0;

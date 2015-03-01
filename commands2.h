@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/resource.h>
@@ -16,3 +17,4 @@ using namespace std;
 
 int onCommandUnknown(const vector<string>& args);
 int onCommandCd(const vector<string>& args);
+int onCommandSignal(const vector<string>& args);

@@ -230,6 +230,10 @@ int onCommand(const vector<string>& args)
   {
     return onCommandCd(args); 
   }
+  else if (args[0] == "signal")
+  {
+    return onCommandSignal(args);
+  }
   else if (args.size() > 2
           && args[0] == "FUS"
           && args[1] == "RO"
