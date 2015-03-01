@@ -69,8 +69,14 @@ int onCommandCd(const vector<string>& args)
     path = "~";
   }
   
+  // Glob home directory
+  if (path[0] == '~')
+  {
+    path = getenv("HOME") + path.substr(1);
+  }
+  
   // Attempt to change directory
-  if (chdir(path) == -1)
+  if (chdir(path.c_str()) == -1)
   {
     cout << "-dash: " << args[0] << ": " << path << ": ";
     
@@ -111,7 +117,7 @@ int onCommandCd(const vector<string>& args)
       break;
     }
     
-    return -1;                          // Return -1 for error
+    return 1;                          // Return 1 for error
   }
   
   return 0;
