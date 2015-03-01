@@ -10,3 +10,4 @@
 using namespace std;
 
 int onCommandUnknown(const vector<string>& args);
+int onCommandCd(const vector<string>& args);

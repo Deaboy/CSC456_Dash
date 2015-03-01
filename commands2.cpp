@@ -30,15 +30,24 @@ int onCommandUnknown(const vector<string>& args)
     {
       // Handle exec errors
       cout << "ERROR: failed to exec\n";
-      return 1;
+      return 1;                         // Return 1 to terminate program
     }
   }
   else
   {
     // Wait for completion
     while (wait(&status) != childpid);
+    
+    // Print child's PID to screen
+    cout << "Process terminated.\n"
+         << "  PID: " << childpid << '\n';
   }
   
   // Return success
+  return 0;
+}
+
+int onCommandCd(const vector<string>& args)
+{
   return 0;
 }
