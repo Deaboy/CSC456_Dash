@@ -139,8 +139,8 @@ int onCommandSignal(const vector<string>& args)
   int pid;
   
   // Get numbers from arguments
-  signal = stoi(args[1]);
-  pid = stoi(args[2]);
+  signal = atoi(args[1].c_str());
+  pid = atoi(args[2].c_str());
   
   if (kill(pid, signal) == 0)
   {
