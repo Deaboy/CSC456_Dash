@@ -18,7 +18,6 @@
 
 using namespace std;
 
-void commandPreprocess(const string& command, vector<string>& args);
 int onCommand(const vector<string>& args);
 int onCommandExit(const vector<string>& args);
 int onCommandHelp(const vector<string>& args);
@@ -51,12 +50,9 @@ int main()
     // Output prompt
     cout << "dash> ";
     
-    // Input user command
-    getline(cin, input);
-    
-    // Preprocess command and arguments
-    command = input;
-    commandPreprocess(command, args); 
+    // Read in command
+    args.clear();
+    getCommand(cout, cin, args);
     
     // Send command to parsing function
     status = onCommand(args);
@@ -80,6 +76,113 @@ int main()
   cout << "Goodbye!" << endl;
   
   return 0;
+}
+
+
+int getCommand(ostream& out, istream& in, vector<string>& args)
+{
+  string input;
+  string temp;
+  int quot;
+  int bksl;
+  
+  // display prompt
+  out << "dash> ";
+  
+  // initialize values
+  quot = 0;
+  bksl = 0;
+  temp = "";
+  
+  do
+  {
+    // Input user command
+    getline(in, input);
+  
+    // Parse command
+    for (int i = 0; i < input.size(); i++)
+    {
+      // If previous character was a backslash, blindly add current char to args
+      if (bksl)
+      {
+        bksl = false;
+        temp += input[i];
+      }
+
+      // Otherwise, if whitespace (and not in quotes), split command
+      else if (isspace(input[i]) && quot == 0)
+      {
+        if (temp != "")
+        {
+          args.push_back(temp);
+          temp = "";
+        }
+      }
+
+      // Otherwise, act depending on current cahr
+      else
+      {
+        switch (input[i])
+        {
+        case '\\':
+          bksl = true;
+          break;
+
+        case '"':
+          // Toggle double-quote mode
+          if (quot == '"')
+          {
+            quot = 0;
+          }
+          else if (quot == 0)
+          {
+            quot = '"';
+          }
+          else
+          {
+            // Quote mode is activated for other quote type
+            temp += input[i];
+          }
+          break;
+
+        case '\'':
+          // Toggle single-quote mode
+          if (quot == '\'')
+          {
+            quot = 0;
+          }
+          else if (quot == 0)
+          {
+            quot = '\'';
+          }
+          else
+          {
+            // Quote mode is activated for other quote type
+            temp += input[i];
+          }
+          break;
+
+        default:
+          temp += input[i];
+        }
+      }
+    }
+    
+    // Add newline to argument if quoted
+    if (quot != 0 && bksl == false)
+      temp += '\n';
+    
+    // Display prompt
+    if (bksl == true || quot != 0)
+      out << "    > ";
+  }
+  while (bksl == true || quot != 0);
+  
+  // Push remaining text into args
+  if (temp != "")
+    args.push_back(temp);
+  
+  return;
 }
 
 
@@ -121,6 +224,10 @@ int onCommand(const vector<string>& args)
   {
     return onCommandSystat(args);
   }
+  else if (args[0] == "cd")
+  {
+    return onCommandCd(args); 
+  }
   else if (args.size() > 2
           && args[0] == "FUS"
           && args[1] == "RO"
@@ -135,43 +242,6 @@ int onCommand(const vector<string>& args)
   
   // Return 0 to continue as normal
   return 0;
-}
-
-
-/**
- * commandPreprocess
- * Author: Daniel Andrus
- *
- * Preprocesses commands, splitting the raw strings by spaces and putting them
- * into a vector.
- *
- * command - the raw command string read in from console
- * args - vector of strings that will contain the output of this function
-**/
-void commandPreprocess(const string& command, vector<string>& args)
-{
-  args.clear();
-  string tmp = "";
-  
-  // Split command into subcommands
-  for (int i = 0; i <= command.size(); i++)
-  {
-    if (command[i] == ' ' || command[i] == '\t' 
-        || command[i] == '\n' || i == command.size())
-    {
-      if (!tmp.empty())
-      {
-        args.push_back(tmp);
-        tmp = "";
-      }
-    }
-    else
-    {
-      tmp += command[i];
-    }
-  }
-  
-  return;
 }
 
 
