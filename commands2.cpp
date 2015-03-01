@@ -30,7 +30,7 @@ int onCommandUnknown(const vector<string>& args)
     {
       // Handle exec errors
       cout << "ERROR: failed to exec\n";
-      return 1;                         // Return 1 to terminate program
+      return -2;                        // Return -2 to terminate program
     }
   }
   else

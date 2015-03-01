@@ -48,9 +48,6 @@ int main()
   // Enter main program loop
   while (!exit)
   {
-    // Output prompt
-    cout << "dash> ";
-    
     // Read in command
     args.clear();
     getCommand(cout, cin, args);
@@ -60,6 +57,7 @@ int main()
     
     switch (status)
     {
+    case -2:        // kill program
     case -1:        // exit program
       exit = true;
       break;
@@ -74,7 +72,8 @@ int main()
     }
   }
   
-  cout << "Goodbye!" << endl;
+  if (status != -2)
+    cout << "Goodbye!" << endl;
   
   return 0;
 }
@@ -92,11 +91,13 @@ int getCommand(ostream& out, istream& in, vector<string>& args)
   
   // initialize values
   quot = 0;
-  bksl = 0;
   temp = "";
   
   do
   {
+    // Reset backslash flag
+    bksl = 0;
+    
     // Input user command
     getline(in, input);
   
