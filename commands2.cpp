@@ -38,9 +38,17 @@ int onCommandUnknown(const vector<string>& args)
     // Wait for completion
     while (wait(&status) != childpid);
     
-    // Print child's PID to screen
+    // Retrieve process stats
+    struct rusage stats;
+    getrusage(RUSAGE_CHILDREN, &stats);
+    
+    // Output process information
     cout << "Process terminated.\n"
-         << "  PID: " << childpid << '\n';
+         << "          PID: " << childpid << '\n'
+         << "    User time: " << stats.ru_utime.tv_usec << '\n'
+         << "  System time: " << stats.ru_stime.tv_usec << '\n'
+         << "  Page faults: " << stats.ru_minflt << '\n'
+         << "   Page swaps: " << stats.ru_nswap << endl;
   }
   
   // Return success
