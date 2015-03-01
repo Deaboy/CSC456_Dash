@@ -35,6 +35,8 @@ int onCommandUnknown(const vector<string>& args)
   }
   else
   {
+    cout << "Child PID: " << childpid << endl;
+    
     // Wait for completion
     while (wait(&status) != childpid);
     
@@ -44,7 +46,6 @@ int onCommandUnknown(const vector<string>& args)
     
     // Output process information
     cout << "Process terminated.\n"
-         << "          PID: " << childpid << '\n'
          << "    User time: " << stats.ru_utime.tv_usec << '\n'
          << "  System time: " << stats.ru_stime.tv_usec << '\n'
          << "  Page faults: " << stats.ru_minflt << '\n'
