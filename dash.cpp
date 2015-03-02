@@ -137,7 +137,6 @@ int main()
     {
       int arg = 0;
       int pid;
-      int status;
       int** pipes;
       
       // Allocate arrays for pipes
@@ -150,7 +149,24 @@ int main()
       {
         if (pipe(pipes[arg]) != 0)
         {
-          cerr << "-dash: Failed to open pipe" << endl;
+          cerr << "-dash: ";
+          
+          switch(errno)
+          {
+          case EFAULT:
+            cerr << "pipefd is not valid";
+            break;
+            
+          case EMFILE:
+            cerr << "too many file descriptors are in use by process";
+            break;
+            
+          case ENFILE:
+            cerr << "system limit reached";
+            break;
+          }
+          
+          cerr << endl;
           arg = -1;
           break;
         }
