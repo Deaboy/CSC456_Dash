@@ -138,10 +138,11 @@ int main()
       int arg = 0;
       int pid;
       int** pipes;
+      int pipefd[2];
       
       // Allocate arrays for pipes
       pipes = new int* [args.size()-1];
-      for (arg = 0; arg < args.size()-1; arg++);
+      for (arg = 0; arg < args.size()-1; arg++)
         pipes[arg] = new int [2];
       
       // Attempt to open pipes
