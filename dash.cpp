@@ -146,7 +146,7 @@ int main()
         pipes[arg] = new int [2];
       
       // Attempt to open pipes
-      for (arg = 0; arg < args.size() - 1; args++)
+      for (arg = 0; arg < args.size() - 1; arg++)
       {
         if (pipe(pipes[arg]) != 0)
         {
@@ -380,7 +380,7 @@ int getCommand(ostream& out, istream& in, vector<vector<string> >& args,
   
   // Push remaining text into args
   if (temp != "")
-    args.push_back(temp);
+    args[arg].push_back(temp);
   
   return 0;
 }
