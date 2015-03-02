@@ -20,7 +20,7 @@ int onCommandUnknown(const vector<string>& args)
   if (childpid < 0)
   {
     // Handle forking errors
-    cout << "*** ERROR: forking child process failed\n";
+    cerr << "*** ERROR: forking child process failed\n";
     return 1;
   }
   else if (childpid == 0)
@@ -29,7 +29,7 @@ int onCommandUnknown(const vector<string>& args)
     if (execvp(*argsa, argsa) < 0)
     {
       // Handle exec errors
-      cout << "-dash: " << args[0] << ": command not found" << endl;
+      cerr << "-dash: " << args[0] << ": command not found" << endl;
       return -2;                        // Return -2 to terminate program
     }
   }
@@ -79,46 +79,46 @@ int onCommandCd(const vector<string>& args)
   // Attempt to change directory
   if (chdir(path.c_str()) == -1)
   {
-    cout << "-dash: " << args[0] << ": " << path << ": ";
+    cerr << "-dash: " << args[0] << ": " << path << ": ";
     
     // Error occured, display appropriate error message
     switch(errno)
     {
     case EACCES:
-      cout << "Access denied";
+      cerr << "Access denied";
       break;
       
     case EFAULT:
-      cout << "Location out of bounds";
+      cerr << "Location out of bounds";
       break;
       
     case EIO:
-      cout << "An I/O error occured";
+      cerr << "An I/O error occured";
       break;
       
     case ELOOP:
-      cout << "Too many symbolic links";
+      cerr << "Too many symbolic links";
       break;
       
     case ENAMETOOLONG:
-      cout << "Path too long";
+      cerr << "Path too long";
       break;
       
     case ENOENT:
     case ENOTDIR:
-      cout << "No such file or directory";
+      cerr << "No such file or directory";
       break;
       
     case ENOMEM:
-      cout << "Insufficient kernel memory available";
+      cerr << "Insufficient kernel memory available";
       break;
       
     default:
-      cout << "An error occured";
+      cerr << "An error occured";
       break;
     }
     
-    cout << endl;
+    cerr << endl;
     
     return 1;                          // Return 1 for error
   }
@@ -148,29 +148,29 @@ int onCommandSignal(const vector<string>& args)
   }
   else
   {
-    cout << "-dash: " << args[0] << ": ";
+    cerr << "-dash: " << args[0] << ": ";
     
     // Error occured, display appropriate error message
     switch(errno)
     {
     case EINVAL:
-      cout << signal << ": Invalid signal";
+      cerr << signal << ": Invalid signal";
       break;
       
     case EPERM:
-      cout << pid << ": Access to process denied";
+      cerr << pid << ": Access to process denied";
       break;
       
     case ESRCH:
-      cout << pid << ": Process or process group inaccessable";
+      cerr << pid << ": Process or process group inaccessable";
       break;
       
     default:
-      cout << "An error occured";
+      cerr << "An error occured";
       break;
     }
     
-    cout << endl;
+    cerr << endl;
     
     return 1;
   }

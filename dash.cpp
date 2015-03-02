@@ -20,7 +20,7 @@
 using namespace std;
 
 void onSignalReceive(int signal);
-int getCommand(ostream& out, istream& in, vector<string>& args);
+int getCommand(ostream& out, istream& in, vector<vector<string>>& args);
 int onCommand(const vector<string>& args);
 int onCommandExit(const vector<string>& args);
 int onCommandHelp(const vector<string>& args);
@@ -45,7 +45,9 @@ int main()
   int status;
   string input;
   string command;
-  vector<string> args;
+  string infile;
+  string outfile;
+  vector<vector<string>> args;
   bool exit = false;
   
   // Register signal handler
@@ -59,11 +61,173 @@ int main()
   {
     // Read in command
     args.clear();
-    getCommand(cout, cin, args);
+    infile = "";
+    outfile = "";
+    status = getCommand(cout, cin, args, infile, outfile);
     
-    // Send command to parsing function
-    status = onCommand(args);
+    // Validate piping
+    if (!status)
+    {
+      for (int i = 0; i < args.size(); i++)
+      {
+        if (args[i].size() == 0)
+        {
+          status = -2;
+          break;
+        }
+      }
+    }
     
+    // Check for command errors
+    if (status)
+    {
+      cerr << "-dash: ";
+      
+      switch(status)
+      {
+      case -1:
+        cerr << "syntax error near unexpected token 'newline'";
+        break;
+        
+      case -2:
+        cerr << "syntax error near unexpected token '|'";
+        break;
+      }
+      
+      cerr << endl;
+      exit = 0;
+      continue;
+    }
+    
+    // Validate input redirection
+    if (infile != "")
+    {
+      ifstream fin(infile.c_str());
+      if (!fin)
+      {
+        cerr << "-dash: " << infile << ": Unable to open file" << endl;
+        exit = 0;
+        continue;
+      }
+      else
+      {
+        fin.close();
+      }
+    }
+    
+    // Validate output redirection
+    if (outfile != "")
+    {
+      ofstream fout(outfile.c_str());
+      if (!fout)
+      {
+        cerr << "-dash: " << outfile << ": Unable to open file" << endl;
+        exit = 0;
+        continue;
+      }
+      else
+      {
+        fout.close();
+      }
+    }
+    
+    // Handle piping if necessary
+    if (args.size() > 1)
+    {
+      int arg = 0;
+      int pid;
+      int status;
+      int** pipes;
+      
+      // Allocate arrays for pipes
+      pipes = new int* [args.size()-1];
+      for (arg = 0; arg < args.size()-1; arg++);
+        pipes[arg] = new int [2];
+      
+      // Attempt to open pipes
+      for (arg = 0; arg < args.size() - 1; args++)
+      {
+        if (pipe(pipes[arg]) != 0)
+        {
+          cerr << "-dash: Failed to open pipe" << endl;
+          arg = -1;
+          break;
+        }
+      }
+      
+      // Check if pipe opening failed
+      if (arg == -1)
+      {
+        status = 0;
+        continue;
+      }
+      
+      arg = 0;
+      pid = fork();
+      
+      if (pid == 0)                     // child
+      {
+        // Fork processes!
+        for (arg = 0; arg < args.size(); arg++)
+        {
+          // Fork if necessary
+          if (arg < args.size()-1)
+          {
+            pid = fork();
+          }
+          else
+          {
+            fork = 1;
+          }
+          
+          if ( pid == 0 )
+          {
+            continue;
+          }
+          else
+          {
+            // Redirect standard output
+            if (arg < args.size()-1)
+            {
+              close(1);             // close output
+              dup(pipes[arg][1]);   // redirect output
+              close(pipes[arg][0]);
+              close(pipes[arg][1]);
+            }
+            
+            // Redirect standard input
+            if (arg > 0)
+            {
+              close(0); // close input
+              dup(pipes[arg-1][0]);
+              close(pipes[arg-1][0]);
+              close(pipes[arg-1][1]);
+            }
+            
+            onCommand(args[arg]);
+            
+            while (wait(&status) != pid);
+            break;
+          }
+        }
+        
+        status = -2;
+      }
+      else                              // parent
+      {
+        while (wait(&status) != pid);
+        status = 0;
+      }
+      
+    }
+    
+    // Single command
+    else
+    {
+      // Send command to parsing function
+      status = onCommand(args[0]);
+    }
+
     switch (status)
     {
     case -2:        // kill program
@@ -72,7 +236,7 @@ int main()
       break;
       
     default:        // error
-      cout << "\nAn error occured while executing command\n"
+      cerr << "\nAn error occured while executing command\n"
               "  " << input << endl;
       break;
       
@@ -95,19 +259,25 @@ void onSignalReceive(int signal)
 }
 
 
-int getCommand(ostream& out, istream& in, vector<string>& args)
+int getCommand(ostream& out, istream& in, vector<vector<string>>& args,
+               string& infile, string& outfile)
 {
   string input;
   string temp;
   int quot;
   int bksl;
+  int pipe;
+  int arg;
   
   // display prompt
   out << "dash> ";
   
   // initialize values
   quot = 0;
+  pipe = 0;
   temp = "";
+  arg = args.size();
+  args.push_back();
   
   do
   {
@@ -124,16 +294,23 @@ int getCommand(ostream& out, istream& in, vector<string>& args)
       if (bksl)
       {
         bksl = false;
+        pipe = 0;
         temp += input[i];
       }
 
       // Otherwise, if whitespace (and not in quotes), split command
-      else if (isspace(input[i]) && quot == 0)
+      else if ((isspace(input[i]) || input[i] == '|') && quot == 0)
       {
         if (temp != "")
         {
-          args.push_back(temp);
+          args[arg].push_back(temp);
           temp = "";
+        }
+        if (input[i] == '|')
+        {
+          pipe = 1;
+          arg++;
+          args.push_back();
         }
       }
 
@@ -161,6 +338,7 @@ int getCommand(ostream& out, istream& in, vector<string>& args)
             // Quote mode is activated for other quote type
             temp += input[i];
           }
+          pipe = 0;
           break;
 
         case '\'':
@@ -178,10 +356,13 @@ int getCommand(ostream& out, istream& in, vector<string>& args)
             // Quote mode is activated for other quote type
             temp += input[i];
           }
+          pipe = 0;
           break;
-
+          
         default:
+          pipe = 0;
           temp += input[i];
+          break;
         }
       }
     }
@@ -191,10 +372,10 @@ int getCommand(ostream& out, istream& in, vector<string>& args)
       temp += '\n';
     
     // Display prompt
-    if (bksl == true || quot != 0)
+    if (bksl == true || quot != 0 || pipe != 0)
       out << "dash> ";
   }
-  while (bksl == true || quot != 0);
+  while (bksl == true || quot != 0 || pipe != 0);
   
   // Push remaining text into args
   if (temp != "")

@@ -37,7 +37,7 @@ int onCommandCmdnm(const vector<string>& args)
   fin.open(path.c_str());
   if (!fin)
   {
-    cout << "ERROR: One of two things:\n"
+    cerr << "ERROR: One of two things:\n"
             "- No permission to access process files\n"
             "- No process with PID \"" << args[1] << "\"" << endl;
     return 0;
@@ -58,7 +58,7 @@ int onCommandCmdnm(const vector<string>& args)
   
   if (name_count == 0)
   {
-    cout << "No command found for process " << args[1] << endl;
+    cerr << "No command found for process " << args[1] << endl;
   }
   
   fin.close();
@@ -99,7 +99,7 @@ int onCommandPid(const vector<string>& args)
   // Open handler to /proc directory
   if ((dir = opendir("/proc")) == NULL)
   {
-    cout << "Error: unable to access /proc folder." << endl;
+    cerr << "Error: unable to access /proc folder." << endl;
     return 0;
   }
   
@@ -128,7 +128,7 @@ int onCommandPid(const vector<string>& args)
   // Output search results
   if (pids.size() == 0)
   {
-    cout << "No matching processes" << endl;
+    cerr << "No matching processes" << endl;
   }
   else
   {
@@ -197,7 +197,7 @@ int onCommandSystat(const vector<string>& args)
   }
   else
   {
-    cout << "Unable to retrieve system uptime.\n";
+    cerr << "Unable to retrieve system uptime.\n";
   }
   
   
@@ -217,7 +217,7 @@ int onCommandSystat(const vector<string>& args)
   }
   else
   {
-    cout << "Unable to retrieve os and kernel version.\n";
+    cerr << "Unable to retrieve os and kernel version.\n";
   }
   
   
@@ -238,7 +238,7 @@ int onCommandSystat(const vector<string>& args)
   }
   else
   {
-    cout << "Unable to retrieve memory info.\n";
+    cerr << "Unable to retrieve memory info.\n";
   }
   
   
@@ -269,7 +269,7 @@ int onCommandSystat(const vector<string>& args)
   }
   else
   {
-    cout << "Unable to retrieve cpu info.\n";
+    cerr << "Unable to retrieve cpu info.\n";
   }
   
   
@@ -309,7 +309,7 @@ int onDragonborn(const vector<string>& args)
   fin.open(filename);
   if (!fin)
   {
-    cout << "Sorry, unable to open \"" << filename << "\"!\n";
+    cerr << "Sorry, unable to open \"" << filename << "\"!\n";
     return 0;
   }
   
