@@ -90,7 +90,7 @@ int main()
 
 void onSignalReceive(int signal)
 {
-  cout << "\nReceived signal " << signal << "\n    > ";
+  cout << "\nReceived signal " << signal << "\ndash> ";
   cout.flush();
 }
 
@@ -192,7 +192,7 @@ int getCommand(ostream& out, istream& in, vector<string>& args)
     
     // Display prompt
     if (bksl == true || quot != 0)
-      out << "    > ";
+      out << "dash> ";
   }
   while (bksl == true || quot != 0);
   
