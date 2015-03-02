@@ -224,7 +224,9 @@ int main()
             
             onCommand(args[arg]);
             
-            while (wait(&status) != pid);
+            if (arg < args.size() - 1)
+              while (wait(&status) != pid);
+            
             break;
           }
         }
@@ -274,6 +276,8 @@ void onSignalReceive(int signal)
 {
   cout << "\nReceived signal " << signal << "\ndash> ";
   cout.flush();
+  
+  if (signal == 2) exit(1);
 }
 
 
