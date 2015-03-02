@@ -20,7 +20,8 @@
 using namespace std;
 
 void onSignalReceive(int signal);
-int getCommand(ostream& out, istream& in, vector<vector<string>>& args);
+int getCommand(ostream& out, istream& in, vector<vector<string> >& args,
+              string& instream, string& outstream);
 int onCommand(const vector<string>& args);
 int onCommandExit(const vector<string>& args);
 int onCommandHelp(const vector<string>& args);
@@ -47,7 +48,7 @@ int main()
   string command;
   string infile;
   string outfile;
-  vector<vector<string>> args;
+  vector<vector<string> > args;
   bool exit = false;
   
   // Register signal handler
@@ -177,7 +178,7 @@ int main()
           }
           else
           {
-            fork = 1;
+            pid = 1;
           }
           
           if ( pid == 0 )
@@ -259,7 +260,7 @@ void onSignalReceive(int signal)
 }
 
 
-int getCommand(ostream& out, istream& in, vector<vector<string>>& args,
+int getCommand(ostream& out, istream& in, vector<vector<string> >& args,
                string& infile, string& outfile)
 {
   string input;
@@ -277,7 +278,7 @@ int getCommand(ostream& out, istream& in, vector<vector<string>>& args,
   pipe = 0;
   temp = "";
   arg = args.size();
-  args.push_back();
+  args.push_back(vector<string>());
   
   do
   {
@@ -310,7 +311,7 @@ int getCommand(ostream& out, istream& in, vector<vector<string>>& args,
         {
           pipe = 1;
           arg++;
-          args.push_back();
+          args.push_back(vector<string>());
         }
       }
 
