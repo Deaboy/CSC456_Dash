@@ -15,9 +15,11 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <signal.h>
 
 using namespace std;
 
+void onSignalReceive(int signal);
 int getCommand(ostream& out, istream& in, vector<string>& args);
 int onCommand(const vector<string>& args);
 int onCommandExit(const vector<string>& args);
@@ -25,6 +27,7 @@ int onCommandHelp(const vector<string>& args);
 
 #include "commands.h"
 #include "commands2.h"
+
 
 /**
  * Main
@@ -44,6 +47,12 @@ int main()
   string command;
   vector<string> args;
   bool exit = false;
+  
+  // Register signal handler
+  for (int i = 1; i <= 64; i++)
+  {
+    signal(i, onSignalReceive);
+  }
   
   // Enter main program loop
   while (!exit)
@@ -76,6 +85,13 @@ int main()
     cout << "Goodbye!" << endl;
   
   return 0;
+}
+
+
+void onSignalReceive(int signal)
+{
+  cout << "\nReceived signal " << signal << "\n    > ";
+  cout.flush();
 }
 
 
